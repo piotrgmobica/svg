@@ -1,9 +1,8 @@
 /**
  * Class DrawAline accepts {} as options
- * @param {Boolean} drawOneLine  it's gonna create one line or multiple depends on the set, by default is set to true
- * @param {Boolean} isMouseMove  it's gonna create a line with mousemove event listener, by default is set to true
  * @param {String} fillColor  it's gonna fill a SVG element, by default is set to #fff
  * @param {String} strokeColor  it's gonna stroke of SVG element, by default is set to #000
+ * @param {Number} degree  it's gonna create line depends of this degree
  */
 
 class DrawALine {
@@ -28,15 +27,6 @@ class DrawALine {
     this.polyline = this.createSVGElement('polyline');
 
     this.createLineByClick();
-
-    // if (this.options.isMouseMove) {
-    //   this.line = this.createSVGElement('line');
-    //   this.createLinesWithMouseMove();
-    // }
-
-    //this.jumpToAnotherAngle();
-
-    //this.createLinesOnStart();
   }
 
   createSVGElement(element) {
@@ -90,15 +80,4 @@ class DrawALine {
       createtNewLine.setAttribute('y1', centerY);
     });
   }
-
-  // createLinesWithMouseMove() {
-  //   this.svg.addEventListener('mousemove', (e) => {
-  //     if (this.lastPoint === undefined) return;
-
-  //     this.line.setAttribute('x1', e.clientX);
-  //     this.line.setAttribute('y1', e.clientY);
-  //     this.line.setAttribute('Math.round(x2', e.clientX);
-  //     this.line.setAttribute('y2', e.clientY);
-  //   });
-  // }
 }
