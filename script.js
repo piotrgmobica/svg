@@ -7,11 +7,15 @@
  */
 
 class DrawALine {
-  constructor(options = { drawOneLine: true, isMouseMove: true, fillColor: '#fff', strokeColor: '#000' }) {
+  constructor(
+    options = { drawOneLine: false, isMouseMove: true, fillColor: '#fff', strokeColor: '#000', degree: 22.5 }
+  ) {
     this.options = options;
     this.lastPoint = undefined;
     this.line = undefined;
     this.polyline = undefined;
+
+    this.state = {};
 
     this.init();
   }
@@ -25,10 +29,14 @@ class DrawALine {
 
     this.createLineByClick();
 
-    if (this.options.isMouseMove) {
-      this.line = this.createSVGElement('line');
-      this.createLinesWithMouseMove();
-    }
+    // if (this.options.isMouseMove) {
+    //   this.line = this.createSVGElement('line');
+    //   this.createLinesWithMouseMove();
+    // }
+
+    //this.jumpToAnotherAngle();
+
+    //this.createLinesOnStart();
   }
 
   createSVGElement(element) {
@@ -42,34 +50,55 @@ class DrawALine {
     return el;
   }
 
+  createAngle(cx, cy, ex, ey) {
+    const dy = ey - cy;
+    const dx = ex - cx;
+    let theta = Math.atan2(dy, dx);
+    theta *= 180 / Math.PI;
+
+    return theta;
+  }
+
   createLineByClick() {
-    const { isMouseMove, drawOneLine } = this.options;
-    const num = !isMouseMove && drawOneLine ? 3 : 2;
+    const { left, top, width, height } = document.body.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
 
-    this.svg.addEventListener('click', ({ clientX, clientY }) => {
-      let points = this.polyline.getAttribute('points') || '';
-      const newPoint = `${clientX},${clientY} `;
+    this.svg.addEventListener('click', (e) => {
+      let x2, y2;
 
-      points += newPoint;
+      const { clientX, clientY } = e;
 
-      if (points.split(' ').filter(Boolean).length >= num && drawOneLine) {
-        points = '';
-        points += newPoint;
+      const angle = this.createAngle(centerX, centerY, clientX, clientY);
+      const createtNewLine = this.createSVGElement('line');
+
+      if (Math.round(angle / this.options.degree) * this.options.degree === 0) {
+        x2 = centerX + Math.cos(0) * 350;
+        y2 = centerY + Math.sin(0) * 350;
+
+        createtNewLine.setAttribute('x2', Math.round(x2));
+        createtNewLine.setAttribute('y2', Math.round(y2));
+      } else {
+        x2 = centerX + Math.cos((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * 350;
+        y2 = centerY + Math.sin((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * 350;
+
+        createtNewLine.setAttribute('x2', Math.round(x2));
+        createtNewLine.setAttribute('y2', Math.round(y2));
       }
 
-      this.polyline.setAttribute('points', points);
-      this.lastPoint = [clientX, clientY];
+      createtNewLine.setAttribute('x1', centerX);
+      createtNewLine.setAttribute('y1', centerY);
     });
   }
 
-  createLinesWithMouseMove() {
-    this.svg.addEventListener('mousemove', ({ clientX, clientY }) => {
-      if (this.lastPoint === undefined) return;
+  // createLinesWithMouseMove() {
+  //   this.svg.addEventListener('mousemove', (e) => {
+  //     if (this.lastPoint === undefined) return;
 
-      this.line.setAttribute('x1', this.lastPoint[0]);
-      this.line.setAttribute('y1', this.lastPoint[1]);
-      this.line.setAttribute('x2', clientX);
-      this.line.setAttribute('y2', clientY);
-    });
-  }
+  //     this.line.setAttribute('x1', e.clientX);
+  //     this.line.setAttribute('y1', e.clientY);
+  //     this.line.setAttribute('Math.round(x2', e.clientX);
+  //     this.line.setAttribute('y2', e.clientY);
+  //   });
+  // }
 }
