@@ -6,9 +6,7 @@
  */
 
 class DrawALine {
-  constructor(
-    options = { drawOneLine: false, isMouseMove: true, fillColor: '#fff', strokeColor: '#000', degree: 22.5 }
-  ) {
+  constructor(options = { drawOneLine: false, isMouseMove: true, fillColor: '#fff', strokeColor: '#000', degree: 22.5 }) {
     this.options = options;
     this.lastPoint = undefined;
     this.line = undefined;
@@ -53,31 +51,58 @@ class DrawALine {
     const { left, top, width, height } = document.body.getBoundingClientRect();
     const centerX = left + width / 2;
     const centerY = top + height / 2;
+    this.line;
 
     this.svg.addEventListener('click', (e) => {
-      let x2, y2;
-
       const { clientX, clientY } = e;
 
       const angle = this.createAngle(centerX, centerY, clientX, clientY);
-      const createtNewLine = this.createSVGElement('line');
+      this.line = this.createSVGElement('line');
+      let x2, y2;
+
+      const a = centerX - clientX;
+      const b = centerY - clientY;
 
       if (Math.round(angle / this.options.degree) * this.options.degree === 0) {
-        x2 = centerX + Math.cos(0) * 350;
-        y2 = centerY + Math.sin(0) * 350;
+        x2 = centerX + Math.cos(0) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        y2 = centerY + Math.sin(0) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
-        createtNewLine.setAttribute('x2', Math.round(x2));
-        createtNewLine.setAttribute('y2', Math.round(y2));
+        this.line.setAttribute('x2', Math.round(x2));
+        this.line.setAttribute('y2', Math.round(y2));
       } else {
-        x2 = centerX + Math.cos((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * 350;
-        y2 = centerY + Math.sin((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * 350;
+        x2 =
+          centerX +
+          Math.cos((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+        y2 =
+          centerY +
+          Math.sin((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 
-        createtNewLine.setAttribute('x2', Math.round(x2));
-        createtNewLine.setAttribute('y2', Math.round(y2));
+        this.line.setAttribute('x2', Math.round(x2));
+        this.line.setAttribute('y2', Math.round(y2));
       }
 
-      createtNewLine.setAttribute('x1', centerX);
-      createtNewLine.setAttribute('y1', centerY);
+      this.line.setAttribute('x1', centerX);
+      this.line.setAttribute('y1', centerY);
+    });
+
+    this.svg.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      if (this.line === undefined) return;
+
+      const angle = this.createAngle(centerX, centerY, clientX, clientY);
+
+      const a = centerX - clientX;
+      const b = centerY - clientY;
+
+      const e1 =
+        centerX +
+        Math.cos((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+      const e2 =
+        centerY +
+        Math.sin((Math.PI * Math.round(angle / this.options.degree) * this.options.degree) / 180) * Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+
+      this.line.setAttribute('x2', e1);
+      this.line.setAttribute('y2', e2);
     });
   }
 }
